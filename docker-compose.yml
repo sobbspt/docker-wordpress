@@ -1,0 +1,47 @@
+version: '2'
+
+services:
+    blog-web:
+        container_name: blog-web
+        build: .
+        volumes:
+            - ./app:/var/www/html
+        ports:
+            - 7777:80
+        environment:
+            - WORDPRESS_DB_HOST=db
+            - WORDPRESS_DB_USER=root
+            - WORDPRESS_DB_PASSWORD=root
+            - WORDPRESS_DB_NAME=blog_db
+        # networks:
+        #     - public
+        links:
+            - blog-db:db
+
+    blog-db:
+        container_name: blog-db
+        image: mariadb:10.1.13
+        # networks:
+        #     - private
+        environment:
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_DATABASE=blog_db
+            - MYSQL_USER=blog
+            - MYSQL_PASSWORD=root
+    
+    blog-pma:
+        container_name: blog-pma
+        image: phpmyadmin/phpmyadmin
+        ports:
+            - 7778:80
+        environment:
+            - PMA_HOST=db
+            - PMA_PORT=3306
+            - PMA_USER=root
+            - PMA_PASSWORD=root
+        links:
+            - blog-db:db
+
+# networks:
+#     public:
+#     private:
